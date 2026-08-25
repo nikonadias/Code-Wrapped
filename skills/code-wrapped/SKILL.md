@@ -56,6 +56,7 @@ Use the Bash tool. All use `--all --no-merges` for the full picture.
   `<div class="hr" style="height:{max(5, round(v / mx * 176))}px"></div>` joined with no separator.
   Emit real HTML here, not a JS array — the bars must survive a page where scripts do not run.
 - **PEAK**: the busiest hour and its count, e.g. `Peak 8pm &middot; 105 commits`. Index of the max in the array; `0` is 12am, `12` is 12pm.
+- **Y_MAX / Y_MID**: the clock's y-axis scale — `max(hours)` and `round(max/2)`. They label gridlines at the top, middle and baseline of the 176px plot, so the reader can price any bar, not just the peak. Because the tallest bar is exactly `BAR_H`, `Y_MAX` sits flush on the peak.
 
 ### Era time-machine (the bottom grid)
 Answer: *"at 20 hours of code a day (a 2-person team), how long would `LINES` take with each era's tools?"* Use net delivered lines-per-person-hour (LPH) that climbs with tooling, against 20 person-hours/day, every day:
@@ -74,7 +75,7 @@ Convert days → the cleanest human unit and **round to a clean number** (years 
 
 ## Step 3 — render
 
-Copy `template.html` (next to this file) to `out`, substituting every `{{PLACEHOLDER}}`. Create the output dir if needed. Placeholders: `NAME, LINES, LINES_SUFFIX, FILES, COMMITS, HOURS, CODE_PCT, DOCS_PCT, CLOCK_BARS, PEAK, ERA_2000, ERA_2000_U, ERA_2010, ERA_2010_U, ERA_2020, ERA_2020_U, ERA_NOV, ERA_NOV_U, ERA_NOW, ERA_NOW_U, KICKER_A, KICKER_B`. Assert none are left unfilled before writing.
+Copy `template.html` (next to this file) to `out`, substituting every `{{PLACEHOLDER}}`. Create the output dir if needed. Placeholders: `NAME, LINES, LINES_SUFFIX, FILES, COMMITS, HOURS, CODE_PCT, DOCS_PCT, CLOCK_BARS, PEAK, Y_MAX, Y_MID, ERA_2000, ERA_2000_U, ERA_2010, ERA_2010_U, ERA_2020, ERA_2020_U, ERA_NOV, ERA_NOV_U, ERA_NOW, ERA_NOW_U, KICKER_A, KICKER_B`. Assert none are left unfilled before writing.
 
 ## Step 4 — verify fit and alignment (do not skip)
 
@@ -86,6 +87,9 @@ const L = s => Math.round(document.querySelector(s).getBoundingClientRect().left
 ({
   overflow: st.scrollHeight - 1920,                       // MUST be 0
   bars: document.querySelectorAll('.hr').length,          // MUST be 24
+  gridlines: [...document.querySelectorAll('.clock .gl i')]
+    .map(e => Math.round(e.getBoundingClientRect().top
+              - document.querySelector('.clock .plot').getBoundingClientRect().top)), // MUST be [0, 88, 176]
   edges: [L('.hero .num'), L('.hero .stats .n'), L('.dc'),
           L('.clock .cap'), L('.era .cap'), L('.era .cell')],   // MUST all match
   tmTops: [...document.querySelectorAll('.era .cell .tm')]
@@ -96,6 +100,7 @@ const L = s => Math.round(document.querySelector(s).getBoundingClientRect().left
 - `overflow` must be **0**. Anything positive is clipped content; anything negative is dead space. Fix by adjusting the shared paddings and label sizes, not by growing the stage.
 - All tile-content left edges must match. The header eyebrow sits one tile-padding (~45px) further left, flush with the tile's outer edge — that is correct, not a bug.
 - All era `.tm` tops must be equal. If one differs, a label wrapped: keep era labels to one word.
+- The clock gridlines must land on 0 / 88 / 176 and the y labels must centre on them. The axis lives in a `position:relative` 176px plot with the gridlines absolutely positioned behind `.bars`, so it costs no height — if `overflow` moved when you touched the clock, something in there went back into flow.
 
 Then check it at phone width, in an iframe so you do not have to resize the window:
 

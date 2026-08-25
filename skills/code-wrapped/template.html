@@ -55,13 +55,29 @@
   .dc .docs{background:rgba(244,243,238,.16);color:var(--paper);display:flex;align-items:center;justify-content:center;gap:12px;font-size:34px;font-weight:700}
   .dc small{font-size:22px;font-weight:500;opacity:.8}
 
-  .clock .bars{margin-top:22px;display:flex;align-items:flex-end;gap:8px;height:176px}
+  /* The plot is a fixed 176px box with a 64px label gutter. Gridlines and y
+     labels are absolutely positioned inside it, so adding the axis costs no
+     height and the Step 4 overflow check stays at 0. */
+  .clock .plot{position:relative;margin-top:22px;height:176px;padding-left:64px}
+  .clock .ylab{position:absolute;left:0;top:0;width:56px;height:176px;font-size:20px;color:var(--p3)}
+  .clock .ylab span{position:absolute;right:0;transform:translateY(-50%);white-space:nowrap}
+  .clock .ylab span:nth-child(1){top:0}
+  .clock .ylab span:nth-child(2){top:50%}
+  .clock .ylab span:nth-child(3){top:100%}
+  .clock .gl{position:absolute;left:64px;right:0;top:0;height:176px}
+  .clock .gl i{position:absolute;left:0;right:0;height:1px;background:rgba(244,243,238,.10)}
+  .clock .gl i:nth-child(1){top:0}
+  .clock .gl i:nth-child(2){top:50%}
+  .clock .gl i:nth-child(3){top:100%;background:rgba(244,243,238,.18)}
+  /* position:relative so the bars paint OVER the absolutely-positioned
+     gridlines - both are auto z-index, so DOM order decides. */
+  .clock .bars{position:relative;display:flex;align-items:flex-end;gap:8px;height:176px}
   .clock .hr{
     flex:1;border-radius:5px 5px 0 0;min-height:5px;
     background:linear-gradient(to top, rgba(255,120,65,.10) 0%, #FF7841 30%, #FF5B1F 62%, #0a0a0a 100%);
     background-size:100% 176px;background-position:bottom;background-repeat:no-repeat;
   }
-  .clock .ax{display:flex;justify-content:space-between;margin-top:12px;font-size:24px;color:var(--p3)}
+  .clock .ax{display:flex;justify-content:space-between;margin:12px 0 0 64px;font-size:24px;color:var(--p3)}
 
   .era{margin-top:24px;padding:32px 44px}
   .era .cap{font-size:29px;color:var(--p2);margin-bottom:22px;line-height:1.35}
@@ -112,7 +128,11 @@
 
     <div class="tile sect clock">
       <div class="cap">Code clock<b>{{PEAK}}</b></div>
-      <div class="bars">{{CLOCK_BARS}}</div>
+      <div class="plot">
+        <div class="ylab"><span>{{Y_MAX}}</span><span>{{Y_MID}}</span><span>0</span></div>
+        <div class="gl"><i></i><i></i><i></i></div>
+        <div class="bars">{{CLOCK_BARS}}</div>
+      </div>
       <div class="ax"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div>
     </div>
 

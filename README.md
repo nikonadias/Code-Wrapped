@@ -19,7 +19,7 @@ Two details make it actually phone-safe:
 | Files | Unique paths ever touched |
 | Commits | `git rev-list --all --no-merges --count` |
 | Focused hours | Session-gap method. A gap over 90 minutes starts a new session, in-session gaps are summed. Conservative floor, not a guess. |
-| Code clock | Commits per hour of day, local time, 24 bars |
+| Code clock | Commits per hour of day, local time, 24 bars, with a labelled y-axis so any hour is readable and not just the peak |
 | Docs vs code | Conventional-commit prefixes. `docs:` on one side, everything else on the other. |
 | Era time machine | The same line count at 2000 / 2010 / 2020 / Nov 2025 tooling rates against 20 person-hours a day, next to what it actually took |
 
