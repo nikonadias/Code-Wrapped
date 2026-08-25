@@ -30,15 +30,15 @@ The era row is the point of the card. It puts "this took me 16 weeks" next to "t
 Skills live in `~/.claude/skills/`. On Windows that is `%USERPROFILE%\.claude\skills\`.
 
 ```bash
-git clone https://github.com/nikonadias/code-wrapped.git
-cp -r code-wrapped/skills/code-wrapped ~/.claude/skills/
+git clone https://github.com/nikonadias/Code-Wrapped.git
+cp -r Code-Wrapped/skills/code-wrapped ~/.claude/skills/
 ```
 
 PowerShell:
 
 ```powershell
-git clone https://github.com/nikonadias/code-wrapped.git
-Copy-Item -Recurse code-wrapped\skills\code-wrapped "$env:USERPROFILE\.claude\skills\"
+git clone https://github.com/nikonadias/Code-Wrapped.git
+Copy-Item -Recurse Code-Wrapped\skills\code-wrapped "$env:USERPROFILE\.claude\skills\"
 ```
 
 Restart Claude Code. Confirm it loaded with `/code-wrapped`.
