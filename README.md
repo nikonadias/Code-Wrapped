@@ -2,7 +2,12 @@
 
 A Claude Code skill that turns a git repo's history into a shareable, Spotify-Wrapped style stats card.
 
-Point it at a repo. It reads the log, does the math, and writes one self-contained HTML file at 1080px wide, sized for a 9:16 screenshot.
+Point it at a repo. It reads the log, does the math, and writes one self-contained HTML file at exactly 1080x1920, true 9:16, so the whole card fits one phone screen.
+
+Two details make it actually phone-safe:
+
+- **It scales to the viewport.** On a 390px phone the card renders at 390x667. No horizontal scroll, no dead space under it, nothing cut off.
+- **The clock bars are static HTML, not JS-generated.** Open it over `file://`, in an in-app browser, with scripts blocked, whatever. The data is still there.
 
 ![Code Wrapped card](example/preview.png)
 
@@ -55,7 +60,7 @@ Optional inputs:
 - **range** - a date window, for example `--since=2026-01-01 --until=2026-12-31`. Defaults to full history.
 - **out** - output path. Defaults to `<repo>/scratch/code-wrapped/index.html`.
 
-Then open the file in a browser at least 1080px wide and screenshot it.
+You get two files: `index.html` (opens on anything, scales to the screen) and `card.png` at 1080x1920, ready to post as-is. The PNG is usually the one you want.
 
 ## Re-theme it
 
@@ -69,17 +74,19 @@ Everything visual is in the `:root` block at the top of `skills/code-wrapped/tem
 
 Swap those five values and the whole card follows. The clock bars use a fixed-scale gradient so taller bars reveal more of the ramp. Keep `background-size:100% 210px; background-position:bottom` if you restyle them.
 
-The card is a fixed 1080px design in px units. Leave `.fit` as a plain block with `.stage{margin:0 auto}`. Setting `display:flex` on the wrapper shrinks the stage and cramps everything on narrow viewports.
+The card is a fixed 1080x1920 design in px units. Leave `.fit` as a plain block; the scale script sets its height so nothing pools underneath. Setting `display:flex` on the wrapper shrinks the stage and cramps everything on narrow viewports.
+
+The stage uses `justify-content:space-between`, so spare vertical room spreads evenly between tiles. Add a section and you must re-run the fit check - the slack absorbs small additions silently right up until it does not.
 
 ## House rules the skill enforces
 
 - No emojis anywhere on the card. Icons are inline SVG or typographic only.
 - One accent color. Orange carries the eye, nothing else competes.
-- Layout is verified numerically before it is called done, not eyeballed. Step 4 of the skill reads bounding boxes and asserts every tile's content shares a left edge.
+- Layout is verified numerically before it is called done, not eyeballed. Step 4 of the skill asserts the content overflows the 1920px box by exactly 0, that all 24 bars exist, that every tile's content shares a left edge, and that a 390px viewport produces no horizontal scroll.
 
 ## Example
 
-`example/index.html` is a real card, generated from a private repo over 2026-05-07 to 2026-08-25: 781K lines, 3,733 files, 1,466 commits, 188 focused hours.
+`example/index.html` and `example/preview.png` are a real card, generated from a private repo over 2026-05-07 to 2026-08-25: 781K lines, 3,733 files, 1,466 commits, 188 focused hours, peak hour 8pm.
 
 ## License
 
