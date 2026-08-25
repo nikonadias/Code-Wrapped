@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Code Wrapped</title>
+<style>
+  :root{
+    --navy0:#102450; --navy1:#0b1c3f; --navy2:#081530;
+    --paper:#f4f3ee; --p2:rgba(244,243,238,.66); --p3:rgba(244,243,238,.40);
+    --orange:#FF5B1F; --orange2:#FF7841; --black:#0a0a0a;
+    --tile:rgba(255,255,255,.045); --line:rgba(244,243,238,.15);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%;background:#081530;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+  .fit{background:#081530}
+  .stage{
+    width:1080px;margin:0 auto;color:var(--paper);
+    padding:84px 86px 92px;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,var(--navy0) 0%,var(--navy1) 60%,var(--navy2) 100%);
+  }
+
+  .head{display:flex;align-items:center;justify-content:space-between}
+  .head .who{display:flex;align-items:center;gap:26px}
+  .head .ey{font-size:26px;letter-spacing:.4em;color:var(--orange);font-weight:600}
+  .head .ti{font-size:74px;font-weight:700;letter-spacing:-.02em;line-height:1;margin-top:6px}
+
+  .tile{border:1px solid var(--line);border-radius:30px;background:var(--tile)}
+
+  .hero{margin-top:58px;padding:48px 48px}
+  .hero .lbl{font-size:30px;letter-spacing:.4em;color:var(--orange);font-weight:600}
+  .hero .num{font-size:200px;line-height:.88;font-weight:700;letter-spacing:-.04em;margin-top:8px;color:var(--paper)}
+  .hero .num small{font-size:88px;color:var(--orange)}
+  .hero .stats{margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding-top:30px}
+  .hero .stats div{text-align:center;border-left:1px solid var(--line)}
+  .hero .stats div:first-child{border-left:none;text-align:left}
+  .hero .stats div:last-child{text-align:right}
+  .hero .stats .n{font-size:62px;font-weight:700;letter-spacing:-.02em}
+  .hero .stats .k{font-size:26px;color:var(--p2);margin-top:4px;letter-spacing:.02em}
+
+  .grid2{margin-top:34px;display:grid;grid-template-columns:1fr;gap:34px}
+  .sect{padding:42px 48px}
+  .sect .cap{font-size:26px;letter-spacing:.34em;color:var(--p3);font-weight:600;text-transform:uppercase}
+
+  .dc{margin-top:30px;display:flex;height:66px;border-radius:16px;overflow:hidden}
+  .dc .code{background:var(--orange);color:var(--black);display:flex;align-items:center;justify-content:center;gap:14px;font-size:34px;font-weight:700}
+  .dc .docs{background:rgba(244,243,238,.16);color:var(--paper);display:flex;align-items:center;justify-content:center;gap:14px;font-size:34px;font-weight:700}
+  .dc small{font-size:24px;font-weight:500;opacity:.8}
+
+  .clock{margin-top:30px}
+  .clock .bars{display:flex;align-items:flex-end;gap:9px;height:210px}
+  .clock .hr{flex:1;border-radius:6px 6px 0 0;min-height:6px}
+  .clock .ax{display:flex;justify-content:space-between;margin-top:16px;font-size:24px;color:var(--p3)}
+
+  .era{margin-top:34px;padding:42px 48px}
+  .era .cap{font-size:30px;color:var(--p2);margin-bottom:28px}
+  .era .cap b{color:var(--paper);font-weight:700}
+  .era .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+  .era .cell{border:1px solid var(--line);border-radius:22px;padding:28px 14px;text-align:center}
+  .era .cell .yr{font-size:25px;font-weight:700;white-space:nowrap;color:var(--paper)}
+  .era .cell .tl{font-size:18px;color:var(--p3);margin-top:5px;white-space:nowrap}
+  .era .cell .tm{font-size:46px;font-weight:700;margin-top:18px;color:var(--orange2)}
+  .era .cell .tm small{font-size:22px;color:var(--p2);font-weight:500;display:block;margin-top:2px}
+  .era .now{background:var(--orange);border-color:var(--orange)}
+  .era .now .yr,.era .now .tl{color:var(--black)}
+  .era .now .tm{color:var(--black)}
+  .era .now .tm small{color:rgba(10,10,10,.7)}
+
+  .kick{margin-top:34px;font-size:30px;line-height:1.4;color:var(--orange2);font-weight:700}
+  .kick span{color:var(--p2);font-weight:400}
+</style>
+</head>
+<body>
+<div class="fit">
+  <div class="stage" id="stage">
+
+    <div class="head">
+      <div class="who">
+        <div>
+          <div class="ey">NIKO</div>
+          <div class="ti">Code Wrapped</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile hero">
+      <div class="lbl">LINES WRITTEN</div>
+      <div class="num">781<small>K</small></div>
+      <div class="stats">
+        <div><div class="n">3,733</div><div class="k">files</div></div>
+        <div><div class="n">1,466</div><div class="k">commits</div></div>
+        <div><div class="n">188</div><div class="k">hours</div></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="tile sect">
+        <div class="cap">Docs vs code</div>
+        <div class="dc">
+          <div class="code" style="width:52%">Code <small>52%</small></div>
+          <div class="docs" style="width:48%">Docs <small>48%</small></div>
+        </div>
+      </div>
+
+      <div class="tile sect clock">
+        <div class="cap">Code clock</div>
+        <div class="bars" id="clock"></div>
+        <div class="ax"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div>
+      </div>
+    </div>
+
+    <div class="tile era">
+      <div class="cap">At <b>20 hours of code a day</b>, a team of two — 781K lines would take:</div>
+      <div class="grid">
+        <div class="cell"><div class="yr">2000</div><div class="tl">by hand</div><div class="tm">27<small>years</small></div></div>
+        <div class="cell"><div class="yr">2010</div><div class="tl">forums</div><div class="tm">11<small>years</small></div></div>
+        <div class="cell"><div class="yr">2020</div><div class="tl">frameworks</div><div class="tm">5<small>years</small></div></div>
+        <div class="cell"><div class="yr">Nov 2025</div><div class="tl">AI agents</div><div class="tm">15<small>months</small></div></div>
+        <div class="cell now"><div class="yr">This week</div><div class="tl">Claude</div><div class="tm">16<small>weeks</small></div></div>
+      </div>
+    </div>
+
+    <div class="kick">More shipped in 16 weeks <span>than 27 years of hand-coding would have.</span></div>
+
+  </div>
+</div>
+<script>
+  var hrs=[88,91,63,72,32,35,26,19,8,18,27,29,76,74,76,72,54,72,87,77,105,73,104,88],max=Math.max.apply(null,hrs),CH=210;
+  var c=document.getElementById('clock');
+  hrs.forEach(function(v){var d=document.createElement('div');
+    d.className='hr';d.style.height=Math.max(6,Math.round(v/max*CH))+'px';
+    d.style.background='linear-gradient(to top, rgba(255,120,65,.10) 0%, #FF7841 30%, #FF5B1F 62%, #0a0a0a 100%)';
+    d.style.backgroundSize='100% '+CH+'px';d.style.backgroundPosition='bottom';d.style.backgroundRepeat='no-repeat';
+    c.appendChild(d);});
+</script>
+</body>
+</html>
