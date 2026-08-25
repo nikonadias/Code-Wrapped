@@ -1,3 +1,12 @@
 .DS_Store
 Thumbs.db
+
+# Default output dir for the skill, so running it inside this repo does not
+# commit your own card over the example.
 scratch/
+
+# Step 4 writes the PNG with no directory, so it lands at the repo root.
+/card.png
+
+# Local Claude Code settings, if you install the skill project-scoped.
+.claude/settings.local.json
