@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Code Wrapped</title>
+<title>Vibe Code Wrapped</title>
 <style>
   :root{
     --navy0:#102450; --navy1:#0b1c3f; --navy2:#081530;
@@ -28,9 +28,14 @@
     margin:0 auto;
   }
 
-  .head{display:flex;align-items:center;justify-content:space-between}
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
   .head .ey{font-size:24px;letter-spacing:.4em;color:var(--orange);font-weight:600}
-  .head .ti{font-size:66px;font-weight:700;letter-spacing:-.02em;line-height:1;margin-top:6px}
+  .head .ti{font-size:62px;font-weight:700;letter-spacing:-.025em;line-height:1;margin-top:6px}
+  /* The range is the card's only claim about WHEN, so it sits in the header
+     rather than buried near the era grid. nowrap because a wrapped date reads
+     as two separate dates. */
+  .head .dt{font-size:23px;letter-spacing:.16em;color:var(--p2);font-weight:600;
+            white-space:nowrap;text-align:right;padding-top:6px}
 
   .tile{border:1px solid var(--line);border-radius:28px;background:var(--tile)}
 
@@ -104,8 +109,9 @@
     <div class="head">
       <div>
         <div class="ey">NIKO</div>
-        <div class="ti">Code Wrapped</div>
+        <div class="ti">Vibe Code Wrapped</div>
       </div>
+      <div class="dt">MAY 7 – AUG 25, 2026</div>
     </div>
 
     <div class="tile hero">
@@ -143,7 +149,7 @@
         <div class="cell"><div class="yr">2010</div><div class="tl">forums</div><div class="tm">11<small>years</small></div></div>
         <div class="cell"><div class="yr">2020</div><div class="tl">frameworks</div><div class="tm">5<small>years</small></div></div>
         <div class="cell"><div class="yr">Nov 2025</div><div class="tl">AI agents</div><div class="tm">15<small>months</small></div></div>
-        <div class="cell now"><div class="yr">This week</div><div class="tl">Claude</div><div class="tm">16<small>weeks</small></div></div>
+        <div class="cell now"><div class="yr">Actual</div><div class="tl">Claude Code</div><div class="tm">16<small>weeks</small></div></div>
       </div>
     </div>
 
