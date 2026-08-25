@@ -99,12 +99,49 @@
   .era .now .tm small{color:rgba(10,10,10,.7)}
 
   .kick{padding-top:4px;font-size:30px;line-height:1.4;color:var(--orange2);font-weight:700}
+
+  /* ---- 4:5 FEED VARIANT (1080x1350) ----------------------------------------
+     Instagram feed caps portrait at 4:5, so the 9:16 card gets cropped there and
+     loses the era row. Same markup, denser type. Everything below is an override
+     of the block above it - keep them paired when you edit either. */
+  .stage.feed{height:1350px;padding:40px 48px 42px}
+  .feed .head .ey{font-size:19px}
+  .feed .head .ti{font-size:48px}
+  .feed .head .dt{font-size:18px;letter-spacing:.13em;padding-top:4px}
+  .feed .tile{border-radius:20px}
+  .feed .hero{margin-top:22px;padding:26px 32px 24px}
+  .feed .hero .lbl{font-size:20px}
+  .feed .hero .num{font-size:132px;margin-top:4px}
+  .feed .hero .num small{font-size:58px}
+  .feed .hero .stats{margin-top:18px;padding-top:16px}
+  .feed .hero .stats .n{font-size:42px}
+  .feed .hero .stats .k{font-size:19px;margin-top:4px}
+  .feed .sect{padding:22px 32px;margin-top:16px}
+  .feed .sect .cap{font-size:19px;letter-spacing:.3em}
+  .feed .dc{margin-top:14px;height:46px;border-radius:10px}
+  .feed .dc .code,.feed .dc .docs{font-size:25px;gap:9px}
+  .feed .dc small{font-size:17px}
+  .feed .clock .plot{margin-top:14px;height:118px;padding-left:48px}
+  .feed .clock .ylab{width:40px;height:118px;font-size:15px}
+  .feed .clock .gl{left:48px;height:118px}
+  .feed .clock .bars{height:118px;gap:6px}
+  .feed .clock .hr{background-size:100% 118px;border-radius:4px 4px 0 0;min-height:4px}
+  .feed .clock .ax{margin:8px 0 0 48px;font-size:17px}
+  .feed .era{margin-top:16px;padding:22px 32px}
+  .feed .era .cap{font-size:21px;margin-bottom:16px}
+  .feed .era .grid{gap:10px}
+  .feed .era .cell{padding:16px 6px;border-radius:14px}
+  .feed .era .cell .yr{font-size:19px}
+  .feed .era .cell .tl{font-size:14px}
+  .feed .era .cell .tm{font-size:32px;margin-top:10px}
+  .feed .era .cell .tm small{font-size:15px;margin-top:3px}
+  .feed .kick{font-size:21px;padding-top:2px}
   .kick span{color:var(--p2);font-weight:400}
 </style>
 </head>
 <body>
 <div class="fit" id="fit">
-  <div class="stage" id="stage">
+  <div class="stage " id="stage" data-h="1920">
 
     <div class="head">
       <div>
@@ -162,10 +199,11 @@
   // so if this script never runs the card still renders complete - just at 1:1.
   (function(){
     var stage=document.getElementById('stage'), fit=document.getElementById('fit');
+    var H=parseInt(stage.getAttribute('data-h'),10)||1920;
     function size(){
       var s=Math.min(1, document.documentElement.clientWidth/1080);
       document.documentElement.style.setProperty('--s', s);
-      fit.style.height=Math.round(1920*s)+'px';
+      fit.style.height=Math.round(H*s)+'px';
     }
     size();
     addEventListener('resize', size);

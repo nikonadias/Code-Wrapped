@@ -5,7 +5,14 @@ description: Generate a shareable "Vibe Code Wrapped" stats card (Spotify-Wrappe
 
 # Vibe Code Wrapped
 
-Produces a self-contained, Instagram-shareable HTML card at **exactly 1080x1920 — true 9:16**, so one phone screenshot captures the whole thing. Default palette: navy `#0b1c3f`, off-white `#f4f3ee`, orange `#FF5B1F`, black `#0a0a0a`. Re-theme by editing the `:root` block in `template.html`.
+Produces a self-contained, Instagram-shareable HTML card in **two formats, and you render both every time**:
+
+| Format | Size | Where it goes |
+|---|---|---|
+| `story` | 1080x1920 (9:16) | Stories, Reels cover, TikTok. Full bleed. |
+| `feed` | 1080x1350 (4:5) | **The grid post.** Instagram caps portrait at 4:5 — post the 9:16 to feed and it gets cropped, which eats the era row off the bottom. That row is the point of the card. |
+
+Same markup and same numbers; `feed` is a `.feed` class on the stage that overrides the type scale and the plot height. Ask which they want only if they say; otherwise hand over both and say which is which. Default palette: navy `#0b1c3f`, off-white `#f4f3ee`, orange `#FF5B1F`, black `#0a0a0a`. Re-theme by editing the `:root` block in `template.html`.
 
 Two things make it phone-safe and both are load-bearing:
 
@@ -59,7 +66,7 @@ If the user has already answered any of these in their request, do not re-ask it
 - **name** — the eyebrow over the title (e.g. `NIKO`).
 - **tool** — the AI coding tool credited in the final era cell (e.g. `Claude Code`).
 - **range** — optional date window. Default: full history.
-- **out** — output path. Default: `<repo>/scratch/code-wrapped/index.html`.
+- **out** — output path. Default: `<repo>/scratch/code-wrapped/index.html` for `story`, `index-feed.html` for `feed`.
 
 ---
 
@@ -108,8 +115,9 @@ If the repo has no conventional-commit prefixes at all, the split is meaningless
 - **FILES / COMMITS / HOURS**: thousands-separated integers (e.g. `3,010`).
 - **RANGE**: the window the card covers, uppercase, e.g. `MAY 7 – AUG 25, 2026`. Use the real first and last commit dates from Step 1, not the dates the user asked for — if the repo's history starts later than `--since`, the card must say what it actually measured. Keep it one line; it is `nowrap`.
 - **TOOL**: the tool from Step 0, e.g. `Claude Code`.
-- **CLOCK_BARS**: the 24 bars as **static HTML**, one div each, height in px. With `BAR_H = 176` and `mx = max(hours)`:
-  `<div class="hr" style="height:{max(5, round(v / mx * 176))}px"></div>` joined with no separator.
+- **FORMAT / CARD_H**: `""` + `1920` for story, `feed` + `1350` for feed. `FORMAT` lands in the stage's class list; `CARD_H` lands in `data-h` and is what the scale script reads, so a wrong value means dead space under the card at phone width.
+- **CLOCK_BARS**: the 24 bars as **static HTML**, one div each, height in px. **`BAR_H` is per format — 176 for story, 118 for feed** — so the bars must be regenerated for each, not shared. With `mx = max(hours)`:
+  `<div class="hr" style="height:{max(4, round(v / mx * BAR_H))}px"></div>` joined with no separator.
   Emit real HTML here, not a JS array — the bars must survive a page where scripts do not run.
 - **PEAK**: the busiest hour and its count, e.g. `Peak 8pm &middot; 105 commits`. Index of the max in the array; `0` is 12am, `12` is 12pm.
 - **Y_MAX / Y_MID**: the clock's y-axis scale — `max(hours)` and `round(max/2)`. They label gridlines at the top, middle and baseline of the 176px plot, so the reader can price any bar, not just the peak. Because the tallest bar is exactly `BAR_H`, `Y_MAX` sits flush on the peak.
@@ -137,7 +145,7 @@ Convert days → the cleanest human unit and **round to a clean number** (years 
 
 Copy `template.html` (next to this file) to `out`, substituting every `{{PLACEHOLDER}}`. Create the output dir if needed. Placeholders:
 
-`NAME, RANGE, TOOL, LINES, LINES_SUFFIX, FILES, COMMITS, HOURS, CODE_PCT, DOCS_PCT, CLOCK_BARS, PEAK, Y_MAX, Y_MID, ERA_2000, ERA_2000_U, ERA_2010, ERA_2010_U, ERA_2020, ERA_2020_U, ERA_NOV, ERA_NOV_U, ERA_NOW, ERA_NOW_U, KICKER_A, KICKER_B`
+`NAME, RANGE, TOOL, FORMAT, CARD_H, LINES, LINES_SUFFIX, FILES, COMMITS, HOURS, CODE_PCT, DOCS_PCT, CLOCK_BARS, PEAK, Y_MAX, Y_MID, ERA_2000, ERA_2000_U, ERA_2010, ERA_2010_U, ERA_2020, ERA_2020_U, ERA_NOV, ERA_NOV_U, ERA_NOW, ERA_NOW_U, KICKER_A, KICKER_B`
 
 Assert none are left unfilled before writing.
 
@@ -145,17 +153,24 @@ Assert none are left unfilled before writing.
 
 ## Step 4 — verify fit and alignment (do not skip)
 
-The card is a fixed 1080x1920 box. Content that overruns it is silently clipped, so this step is a **numeric assertion, not an eyeball pass**. Serve the output dir (`python -m http.server 8791 --directory <out-dir>`) and run this in the page console:
+The card is a fixed box. Content that overruns it is silently clipped, so this step is a **numeric assertion, not an eyeball pass**. **Run it for BOTH formats** — the feed variant is a different type scale, so passing story proves nothing about feed.
+
+**The trap: force `--s` to 1 before measuring.** Unless the browser window happens to be ≥1080px, the stage is scaled and every `getBoundingClientRect()` comes back multiplied by `--s`, while `scrollWidth` does not. Compare those two and *every* nowrap label reports as clipped and `headFits` reports false, on a card that is perfectly fine. The snippet below sets `--s` to 1 first and restores it after.
+
+Serve the output dir (`python -m http.server 8791 --directory <out-dir>`) and run this in the page console:
 
 ```js
-const st = document.getElementById('stage'), T = st.getBoundingClientRect().top;
+document.documentElement.style.setProperty('--s', 1);   // <- without this, everything below lies
+const st = document.getElementById('stage');
+const H = parseInt(st.getAttribute('data-h'), 10);      // 1920 story / 1350 feed
 const L = s => Math.round(document.querySelector(s).getBoundingClientRect().left);
 const plot = document.querySelector('.clock .plot').getBoundingClientRect();
-({
-  overflow: st.scrollHeight - 1920,                       // MUST be 0
+const out = ({
+  cardH: Math.round(st.getBoundingClientRect().height),  // MUST equal H
+  overflow: st.scrollHeight - H,                         // MUST be 0
   bars: document.querySelectorAll('.hr').length,          // MUST be 24
   gridlines: [...document.querySelectorAll('.clock .gl i')]
-    .map(e => Math.round(e.getBoundingClientRect().top - plot.top)),  // MUST be [0, 88, 176]
+    .map(e => Math.round(e.getBoundingClientRect().top - plot.top)),  // [0,88,176] story / [0,59,118] feed
   headFits: document.querySelector('.head .dt').getBoundingClientRect().right
             <= document.querySelector('.head').getBoundingClientRect().right,  // MUST be true
   clipped: [...document.querySelectorAll('.era .cell .tl, .head .dt')]
@@ -165,10 +180,11 @@ const plot = document.querySelector('.clock .plot').getBoundingClientRect();
           L('.clock .cap'), L('.era .cap'), L('.era .cell')],   // MUST all match
   tmTops: [...document.querySelectorAll('.era .cell .tm')]
             .map(e => Math.round(e.getBoundingClientRect().top)) // MUST all match
-})
+});
+document.documentElement.style.removeProperty('--s'); out;
 ```
 
-- `overflow` must be **0**. Anything positive is clipped content; anything negative is dead space. Fix by adjusting the shared paddings and label sizes, not by growing the stage.
+- `overflow` must be **0** for each format. Anything positive is clipped content; anything negative is dead space. Fix by adjusting that format's paddings and label sizes, not by growing the stage.
 - All tile-content left edges must match. The header eyebrow sits one tile-padding (~45px) further left, flush with the tile's outer edge — that is correct, not a bug.
 - `clipped` must be empty. Both the date and the tool label are `nowrap`, so an over-long value is silently cut rather than wrapped. A long tool name is the most likely trigger — shorten it.
 - All era `.tm` tops must be equal. If one differs, a label wrapped: keep era labels to one word.
@@ -206,7 +222,12 @@ Confirm the PNG is 1080x1920 and that the clock bars actually have height in it.
 
 ## Step 5 — hand off
 
-Hand over both files: `index.html` (opens on any phone, scales to the screen) and `card.png` (1080x1920, ready to post as-is). The PNG is usually what they actually want — no screenshotting required.
+Hand over the two PNGs and say which is which — that distinction is the whole reason both exist:
+
+- **`card-feed.png`** — 1080x1350. **The grid post.** Instagram crops anything taller than 4:5 in feed, and what it crops is the bottom, which is the era row.
+- **`card.png`** — 1080x1920. Stories, Reels cover, TikTok.
+
+The `.html` files come along for anyone who wants to re-theme or open it on a phone; the PNGs are what actually get posted, no screenshotting required.
 
 Never use emojis anywhere on the card — it is part of the card's house style. Icons are inline SVG or typographic only.
 

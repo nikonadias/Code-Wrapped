@@ -2,13 +2,22 @@
 
 A Claude Code skill that turns a git repo's history into a shareable, Spotify-Wrapped style stats card.
 
-Point it at a repo. It asks you a few questions, reads the log, does the math, and writes one self-contained HTML file at exactly 1080x1920, true 9:16, so the whole card fits one phone screen.
+Point it at a repo. It asks you a few questions, reads the log, does the math, and hands you two ready-to-post images.
 
-![Vibe Code Wrapped card](example/preview.png)
+| File | Size | Where it goes |
+|---|---|---|
+| `card-feed.png` | 1080x1350 (4:5) | **The grid post.** Instagram caps portrait at 4:5 - post a 9:16 to feed and it crops the bottom off, which is the era row. |
+| `card.png` | 1080x1920 (9:16) | Stories, Reels cover, TikTok. Full bleed. |
+
+Same numbers, same markup, denser type in the 4:5. Self-contained HTML comes along too, if you want to re-theme or open it on a phone.
+
+![Vibe Code Wrapped, 4:5 feed card](example/preview-feed.png)
+
+<sub>Above: the 4:5 feed card. The 9:16 story version is <a href="example/preview.png">example/preview.png</a>.</sub>
 
 Two details make it actually phone-safe:
 
-- **It scales to the viewport.** On a 390px phone the card renders at 390x667. No horizontal scroll, no dead space under it, nothing cut off.
+- **It scales to the viewport.** On a 390px phone the 9:16 renders at 390x667. No horizontal scroll, no dead space under it, nothing cut off.
 - **The clock bars are static HTML, not JS-generated.** Open it over `file://`, in an in-app browser, with scripts blocked, whatever. The data is still there.
 
 ## What it counts
@@ -92,9 +101,10 @@ Optional inputs, if you would rather not be asked:
 - **name** - the eyebrow over the title, like `NIKO`.
 - **tool** - the AI coding tool credited in the last era cell.
 - **range** - a date window, for example `--since=2026-01-01 --until=2026-12-31`. Defaults to full history.
-- **out** - output path. Defaults to `<repo>/scratch/code-wrapped/index.html`.
+- **out** - output directory. Defaults to `<repo>/scratch/code-wrapped/`.
+- **format** - `story`, `feed`, or both. Defaults to both.
 
-You get two files: `index.html` (opens on anything, scales to the screen) and `card.png` at 1080x1920, ready to post as-is. The PNG is usually the one you want.
+You get four files: `card-feed.png` (4:5, the grid post), `card.png` (9:16, stories), and the `index.html` / `index-feed.html` behind them. The PNGs are what you post.
 
 ## Re-theme it
 
@@ -106,9 +116,9 @@ Everything visual is in the `:root` block at the top of `skills/code-wrapped/tem
 --orange:#FF5B1F; --orange2:#FF7841;                  /* the one accent */
 ```
 
-Swap those five values and the whole card follows. The clock bars use a fixed-scale gradient so taller bars reveal more of the ramp. Keep `background-size:100% 176px; background-position:bottom` if you restyle them.
+Swap those five values and both formats follow. The 4:5 variant is a `.feed` class on the stage that overrides the type scale and the plot height - if you add a section, edit both blocks or the feed card silently clips. The clock bars use a fixed-scale gradient so taller bars reveal more of the ramp. Keep `background-size:100% <plot height>px; background-position:bottom` if you restyle them - 176px story, 118px feed, and it must match the plot box or the ramp misaligns.
 
-The card is a fixed 1080x1920 design in px units. Leave `.fit` as a plain block; the scale script sets its height so nothing pools underneath. Setting `display:flex` on the wrapper shrinks the stage and cramps everything on narrow viewports.
+Both cards are fixed px designs (1080x1920 and 1080x1350). Leave `.fit` as a plain block; the scale script sets its height so nothing pools underneath. Setting `display:flex` on the wrapper shrinks the stage and cramps everything on narrow viewports.
 
 The stage uses `justify-content:space-between`, so spare vertical room spreads evenly between tiles. Add a section and you must re-run the fit check - the slack absorbs small additions silently right up until it does not.
 
@@ -116,11 +126,11 @@ The stage uses `justify-content:space-between`, so spare vertical room spreads e
 
 - No emojis anywhere on the card. Icons are inline SVG or typographic only.
 - One accent color. Orange carries the eye, nothing else competes.
-- Layout is verified numerically before it is called done, not eyeballed. Step 4 asserts the content overflows the 1920px box by exactly 0, that all 24 bars exist, that the gridlines land on 0/88/176, that no nowrap label is clipped, that every tile's content shares a left edge, and that a 390px viewport produces no horizontal scroll.
+- Layout is verified numerically before it is called done, not eyeballed, **for each format separately**. Step 4 asserts the content overflows that format's box by exactly 0, that all 24 bars exist, that the gridlines land where that format puts them (0/88/176 story, 0/59/118 feed), that no nowrap label is clipped, that every tile's content shares a left edge, and that a 390px viewport produces no horizontal scroll.
 
 ## Example
 
-`example/index.html` and `example/preview.png` are a real card, generated from a private repo over 2026-05-07 to 2026-08-25: 781K lines, 3,733 files, 1,466 commits, 188 focused hours, peak hour 8pm.
+`example/` holds a real card in both formats - `preview-feed.png` / `index-feed.html` (4:5) and `preview.png` / `index.html` (9:16) - generated from a private repo over 2026-05-07 to 2026-08-25: 781K lines, 3,733 files, 1,466 commits, 188 focused hours, peak hour 8pm.
 
 ## License
 
